@@ -19,14 +19,14 @@
 */
 
 
-module DepthwiseConvolutionLayer #(
-    parameter integer DATA_WIDTH = 8,
-    parameter integer KERNEL_SIZE = 3,
-    parameter integer INPUT_CHANNELS = 3,
-    parameter integer CHANNEL_MULTIPLIER = 1
+module depthwise_convolution_layer #(
+  parameter integer DATA_WIDTH = 8,
+  parameter integer KERNEL_SIZE = 3,
+  parameter integer INPUT_CHANNELS = 3,
+  parameter integer CHANNEL_MULTIPLIER = 1
 )(
-    input wire [DATA_WIDTH-1:0] input_data,
-    output wire [DATA_WIDTH-1:0] output_data
+  input wire [DATA_WIDTH-1:0] input_data,
+  output wire [DATA_WIDTH-1:0] output_data
 );
   localparam integer INPUT_SIZE = DATA_WIDTH * DATA_WIDTH * INPUT_CHANNELS;
   localparam integer OUTPUT_CHANNELS = INPUT_CHANNELS * CHANNEL_MULTIPLIER;

@@ -4,6 +4,10 @@ A 512 bit Vision Transformer with `MobileNetV3` CNN for feature extraction.
 
 > This is not an official research project with the Oregon State University.
 
+## WARNING
+
+This is a work in progress, I thought having AI would make it possible to complete in a day but it is certainly slowing me down with horrible response. Due to the lack of time, this project does not come with a testbench and have not been verified.
+
 ## Setup
 
 To setup environment ***after*** completing Caravel setup, run the following command in the root directory of the project.
@@ -61,11 +65,13 @@ graph LR
 
 ## References
 
-This project is created with the help of ChatGPT May 24 Version as required by the the AI Generated Open-Source Silicon Design Challenge. The prompts used to create this project is available at `PROMPT.md` Minor modifications are made by human to optimize and correct the design. This design uses the following references:
+This project is created with the help of ChatGPT May 24 Version as required by the the AI Generated Open-Source Silicon Design Challenge. The prompts used to create this project is available at https://chat.openai.com/share/97b14e4b-678d-4793-92a2-292723c7b540 Minor modifications are made by human to optimize and correct the design. This design uses the following references:
 
 - [Vision Transformer](https://arxiv.org/abs/2010.11929)
 - [MobileNetV3](https://arxiv.org/abs/1905.02244)
 - [MobileViT](https://arxiv.org/abs/2110.02178)
+- [MobileViT2](https://arxiv.org/abs/2206.02680)
+- [Mobile-Former](https://arxiv.org/abs/2108.05895)
 
 ## License
 
