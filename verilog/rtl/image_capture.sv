@@ -18,6 +18,11 @@
 * @date   Created on 05/31/2023 23:50:36 PM
 */
 
+/**
+* Image capture will capture one pixel at a time from the host and pass it to the CNN
+* Each pixel is RGB which includes 8 bits for each color 24 bits in total
+* The other 5 bits are used for the image size
+*/
 
 module image_capture #(
   parameter DATA_WIDTH = 32,

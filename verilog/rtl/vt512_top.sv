@@ -54,6 +54,9 @@ module vt512_top #(
   output [2:0] irq
 );
 
+  // Control register
+  reg [31:0] control_reg;
+
   reg [DATA_WIDTH-1:0] image_data_out;
   reg [MAX_IMAGE_SIZE_LOG2:0] image_size;
   reg size_detection_done;
