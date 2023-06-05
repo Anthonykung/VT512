@@ -28,8 +28,11 @@ module vt512_top #(
   inout vssd1,	// User area 1 digital ground
 `endif
 
+  // Clock
+  // input user_clock2, // 40 MHz
+
   // Wishbone Slave ports (WB MI A)
-  input wb_clk_i,
+  input wb_clk_i, // 40 MHz
   input wb_rst_i,
   input wbs_stb_i,
   input wbs_cyc_i,
@@ -41,17 +44,22 @@ module vt512_top #(
   output [31:0] wbs_dat_o,
 
   // Logic Analyzer Signals
-  input  [127:0] la_data_in,
-  output [127:0] la_data_out,
-  input  [127:0] la_oenb,
+  // input  [127:0] la_data_in,
+  // output [127:0] la_data_out,
+  // input  [127:0] la_oenb,
 
-  // IOs
-  input  [15:0] io_in,
-  output [15:0] io_out,
-  output [15:0] io_oeb,
+  // IOs [37:5] usable [4:0] reserved for SPI
+  // IO[0]: JTAG
+  // IO[1]: SDO data out
+  // IO[2]: SDI data in
+  // IO[3]: CSB chip select
+  // IO[4]: SCK clock
+  input  [`MPRJ_IO_PADS-1:0] io_in,
+  output [`MPRJ_IO_PADS-1:0] io_out,
+  output [`MPRJ_IO_PADS-1:0] io_oeb,  // Output Enable active low
 
   // IRQ
-  output [2:0] irq
+  // output [2:0] irq
 );
 
   // Control register
@@ -60,61 +68,42 @@ module vt512_top #(
   reg [DATA_WIDTH-1:0] image_data_out;
   reg [MAX_IMAGE_SIZE_LOG2:0] image_size;
   reg size_detection_done;
+  reg [MAX_IMAGE_SIZE_LOG2:0] row_counter;
 
-  always @(posedge wb_clk_i) begin
-    if (wb_rst_i) begin
-      // Reset values
-      wbs_ack_o <= 1'b0;
-      wbs_dat_o <= 32'h0;
-    end
-    else if (wbs_cyc_i && wbs_stb_i && wbs_we_i) begin
-      // Acknowledge the write
-      wbs_ack_o <= 1'b1;
+  // Define the states as an enumerated data type
+  typedef enum logic [3:0] {
+    IDLE_STATE,
+    CONFIG_STATE,
+    WEIGHTS_STATE,
+    BIASES_STATE,
+    IMAGE_STATE,
+    // Add other states here...
+  } StateType;
 
-      // Check the address to determine the write destination
-      case (wbs_adr_i)
-        // If wbs_adr_i is 0x414E_0000, then it is a write to the control register
-        32'h414E_0000: begin
-          // Control register
-        end
-        // If wbs_adr_i is 0x414E_5700, then it is a write to the weight memory cells
-        32'h414E_5700: begin
-          // Weight memory cells
-        end
-        // If wbs_adr_i is 0x414E_4200, then it is a write to the bias memory cells
-        32'h414E_4200: begin
-          // Bias memory cells
-        end
-        // If wbs_adr_i is 0x414E_4900, then it is image data
-        32'h414E_4900: begin
-          // Image data
-          image_capture image_capture_inst #(
-            .DATA_WIDTH(DATA_WIDTH),
-            .MAX_IMAGE_SIZE(IMG_WIDTH),
-            .MAX_IMAGE_SIZE_LOG2(9),
-          ) (
-            .wb_clk_i(wb_clk_i),
-            .wb_rst_i(wb_rst_i),
-            .wbs_stb_i(wbs_stb_i),
-            .wbs_cyc_i(wbs_cyc_i),
-            .wbs_we_i(wbs_we_i),
-            .wbs_dat_i(wbs_dat_i),
-            .wbs_ack_o(wbs_ack_o),
-            .wbs_dat_o(wbs_dat_o),
-            .image_data_out(image_data_out),
-            .image_size(image_size),
-            .size_detection_done(size_detection_done),
-          )
-        end
-        default: begin
-          // Unknown address
-        end
-      endcase
+  // Internal signals
+  StateType current_state;
+  StateType next_state;
+  reg [31:0] current_address;
+
+  // State machine
+  always @(posedge clk, posedge reset) begin
+    if (reset) begin
+      current_state <= IDLE_STATE;
+      current_address <= 0;
     end
     else begin
-      // No write
-      wbs_ack_o <= 1'b0;
-      wbs_dat_o <= 32'h0;
+      current_state <= next_state;
+      case (current_state)
+        IDLE_STATE:
+          if (gpio_data_valid) begin
+            current_address <= gpio_data[31:4];
+            case (current_address[3:0])
+              // Add cases for other addresses here...
+              default: next_state <= IDLE_STATE;
+            endcase
+          end
+          // Add other states and transitions here...
+      endcase
     end
   end
 

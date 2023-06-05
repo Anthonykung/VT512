@@ -29,16 +29,11 @@ module image_capture #(
   parameter MAX_IMAGE_SIZE = 512,
   parameter MAX_IMAGE_SIZE_LOG2 = 9
 ) (
-  input wire wb_clk_i,  // Wishbone clock
-  input wire wb_rst_i,  // Wishbone reset
-  input wire wbs_cyc_i,  // Wishbone cycle
-  input wire wbs_stb_i,  // Wishbone strobe
-  input wire wbs_we_i,  // Wishbone write enable
-  // input wire [3:0] wbs_sel_i,  // Wishbone select
-  input wire [DATA_WIDTH-1:0] wbs_dat_i,  // Wishbone data
-  // input wire [ADDR_WIDTH-1:0] wbs_adr_i,  // Wishbone address
-  output wire wbs_ack_o,  // Wishbone acknowledge
-  output wire [DATA_WIDTH-1:0] wbs_dat_o,  // Wishbone data
+  input wire clk,
+  input wire rst,
+  input wire we_i,
+  input wire [DATA_WIDTH-1:0] data_in,
+  output wire ack_out,
   output wire [DATA_WIDTH-1:0] image_data_out,  // Image data output
   output wire [MAX_IMAGE_SIZE_LOG2:0] image_size,  // Image size output
   output wire size_detection_done

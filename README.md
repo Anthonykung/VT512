@@ -69,7 +69,7 @@ graph LR
 
 The Image Capture module capture 1 pixel at a time and store it to the memory using wishbone interconnect which comes with a 32 bit bus.
 
-Using 100MHz (which is a strech for Caravel), the module can capture 100M pixels per second. The maximum resolution is 512 by 512 which translates to 262144 pixels. This is equivalent to 0.00262144 seconds per frame or 381.469726563 frames per second. Image stream is probably at 60 frames per second max so this is more than enough.
+Correction, Caravel Clock is 40MHz, not 100MHz. That means 10 million pixel per second which translates to 0.0262144 seconds per frame or 38.1469726563 frames per second. Not ideal and have little budget for overhead. GPIO maximum is 50MHz which is 47.6837158203 frame per second so still not enough. That means we can only stream image at 30fps if returning labels, or 15fps if we are returning image.
 
 This module support the following configurations:
 
@@ -103,12 +103,14 @@ NOTE: The `channel` in this section is the color channel of the image.
 
 The CNN Feature Extraction uses a lightweight user configurable CNN model. The CNN model is configured using the configuration register. The configuration register is a 32 bit register with the following format:
 
-| Parameter        | Register Bits | Description               |
-| ---------------- | ------------- | ------------------------- |
-| Filter           | [7:4]         | See Operation Mode        |
-| Conv Layers      | [11:8]        | Number of layers up to 16 |
-| Pooling Layers   | [15:12]       | Number of layers up to 16 |
-| Pooling Interval | [19:16]       | Pooling Interval          |
+| Parameter        | Register Bits | Description                   |
+| ---------------- | ------------- | ----------------------------- |
+| Filter           | [7:4]         | See Operation Mode            |
+| Initial Depth    | [11:8]        | Number of First Layer Filters |
+| Filter Depth     | [15:12]       | Filter Number Multiples       |
+| Conv Layers      | [19:16]       | Number of layers up to 16     |
+| Pooling Layers   | [23:20]       | Number of layers up to 16     |
+| Pooling Interval | [27:24]       | Pooling Interval (Unchecked)  |
 
 #### Operation Modes
 
