@@ -26,36 +26,24 @@ module single_channel_memory #(
 ) (
   input wire clk,
   input wire we,
-  input wire rst,  // active high reset following wishbone standard
+  input wire [MAX_IMAGE_SIZE_LOG2:0] row_wr,  // write address
+  input wire [MAX_IMAGE_SIZE_LOG2:0] col_wr,
   input wire [DATA_WIDTH-1:0] input_data,
-  input wire [MAX_IMAGE_SIZE_LOG2:0] cell_x,
-  input wire [MAX_IMAGE_SIZE_LOG2:0] cell_y,
+  input wire [MAX_IMAGE_SIZE_LOG2:0] row_rd,  // read address
+  input wire [MAX_IMAGE_SIZE_LOG2:0] col_rd,
   output wire [DATA_WIDTH-1:0] output_data
 );
 
   // Memory block 512x512 padded 1 with 8-bit data
-  reg [DATA_WIDTH - 1:0] memory [MAX_IMAGE_SIZE + 1:0][MAX_IMAGE_SIZE + 1:0];
+  reg [DATA_WIDTH - 1:0] memory [MAX_IMAGE_SIZE - 1:0][MAX_IMAGE_SIZE - 1:0];
 
   // Initialize the boundary cells to 0
-  always @(posedge clk or posedge rst) begin
-    if (rst) begin
-      for (integer i = 0; i < MAX_IMAGE_SIZE + 1; i = i + 1) begin
-        memory[i][0] <= 0;
-        memory[i][MAX_IMAGE_SIZE + 1] <= 0;
-        memory[0][i] <= 0;
-        memory[MAX_IMAGE_SIZE + 1][i] <= 0;
-      end
+  always @(posedge clk) begin
+    if (we) begin
+      mem[row_wr][col_wr] <= data_in;
     end
   end
 
-  // Read and write logic
-  always @(posedge clk) begin
-    if (we) begin
-      memory[cell_x][cell_y] <= input_data;
-    end
-    else begin
-      output_data <= memory[cell_x][cell_y];
-    end
-  end
+  assign output_data = mem[row_rd][col_rd];
 
 endmodule

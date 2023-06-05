@@ -82,83 +82,40 @@ module user_project_wrapper #(
 /* User project is instantiated  here   */
 /*--------------------------------------*/
 
-// user_proj_example mprj (
-// `ifdef USE_POWER_PINS
-// 	.vccd1(vccd1),	// User area 1 1.8V power
-// 	.vssd1(vssd1),	// User area 1 digital ground
-// `endif
+    VisionTransformer mprj #(
+        .DATA_WIDTH(32),
+        .MAX_IMAGE_SIZE(512)
+    )(
+    `ifdef USE_POWER_PINS
+        .vccd1(vccd1),	// User area 1 1.8V power
+        .vssd1(vssd1),	// User area 1 digital ground
+    `endif
 
-//     .wb_clk_i(wb_clk_i),
-//     .wb_rst_i(wb_rst_i),
+        .wb_clk_i(wb_clk_i),
+        .wb_rst_i(wb_rst_i),
 
-//     // MGMT SoC Wishbone Slave
+        // MGMT SoC Wishbone Slave
 
-//     .wbs_cyc_i(wbs_cyc_i),
-//     .wbs_stb_i(wbs_stb_i),
-//     .wbs_we_i(wbs_we_i),
-//     .wbs_sel_i(wbs_sel_i),
-//     .wbs_adr_i(wbs_adr_i),
-//     .wbs_dat_i(wbs_dat_i),
-//     .wbs_ack_o(wbs_ack_o),
-//     .wbs_dat_o(wbs_dat_o),
+        .wbs_cyc_i(wbs_cyc_i),
+        .wbs_stb_i(wbs_stb_i),
+        .wbs_we_i(wbs_we_i),
+        .wbs_sel_i(wbs_sel_i),
+        .wbs_adr_i(wbs_adr_i),
+        .wbs_dat_i(wbs_dat_i),
+        .wbs_ack_o(wbs_ack_o),
+        .wbs_dat_o(wbs_dat_o),
 
-//     // Logic Analyzer
-
-//     .la_data_in(la_data_in),
-//     .la_data_out(la_data_out),
-//     .la_oenb (la_oenb),
-
-//     // IO Pads
-
-//     .io_in ({io_in[37:30],io_in[7:0]}),
-//     .io_out({io_out[37:30],io_out[7:0]}),
-//     .io_oeb({io_oeb[37:30],io_oeb[7:0]}),
-
-//     // IRQ
-//     .irq(user_irq)
-// );
-
-VisionTransformer mprj #(
-    .DATA_WIDTH(32),
-    .MAX_IMAGE_SIZE(512)
-)(
-`ifdef USE_POWER_PINS
-    .vccd1(vccd1),	// User area 1 1.8V power
-    .vssd1(vssd1),	// User area 1 digital ground
-`endif
-
-    // Clock
-    // .user_clock2(user_clock2),
-
-    .wb_clk_i(wb_clk_i),
-    .wb_rst_i(wb_rst_i),
-
-    // MGMT SoC Wishbone Slave
-
-    .wbs_cyc_i(wbs_cyc_i),
-    .wbs_stb_i(wbs_stb_i),
-    .wbs_we_i(wbs_we_i),
-    .wbs_sel_i(wbs_sel_i),
-    .wbs_adr_i(wbs_adr_i),
-    .wbs_dat_i(wbs_dat_i),
-    .wbs_ack_o(wbs_ack_o),
-    .wbs_dat_o(wbs_dat_o),
-
-    // Logic Analyzer
-
-    // .la_data_in(la_data_in),
-    // .la_data_out(la_data_out),
-    // .la_oenb (la_oenb),
-
-    // IO Pads
-
-    .io_in (io_in),
-    .io_out(io_out),
-    .io_oeb(io_oeb),
-
-    // IRQ
-    // .irq(user_irq)
-);
+        // 24-bit Data Transfer
+        .dt24_clk_i(io_in[5]),
+        .dt24_we_i(io_in[6]),
+        .dt24_data_i(io_in[37:14]),
+        .dt24_clk_o(io_out[5]),
+        .dt24_we_o(io_out[6]),
+        .dt24_data_o(io_out[37:14]),
+        .dt24_clk_oenb(io_oeb[5]),
+        .dt24_we_oenb(io_oeb[6]),
+        .dt24_data_oenb(io_oeb[37:14])
+    );
 
 endmodule	// user_project_wrapper
 
